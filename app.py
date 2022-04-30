@@ -1,14 +1,24 @@
-import pickle
-import streamlit as st
+# Importing modules
+
+import pickle # For loading model.
+import streamlit as st # For web app
 import numpy
 
+# Main heading
 st.markdown("<h1 style='text-align: center; color: white;'>RECOMMENDED MANGA</h1>", unsafe_allow_html=True)
+
+# Loading model
 animes = pickle.load(open('manga.pkl', 'rb'))
+
+# Loading first similarity file
 similarity = pickle.load(open('s100.pkl','rb'))
+
+# Adding further similarity files 
 for i in range(200,14601,100):
     nam = "s" + str(i) + ".pkl"
     similarity = numpy.append(similarity,pickle.load(open(nam,"rb")),axis=0)
 
+# This will recommend different mangas based on selected one.
 def recommend(manga):
     index = animes[animes['Name'] == manga].index[0]
     distances = sorted(list(enumerate(similarity[index])),reverse=True,key = lambda x: x[1])
@@ -24,11 +34,16 @@ def recommend(manga):
             pass
     return names,link,img
 
+# Collecting values of manga names
 anime = animes['Name'].values
+
+# Select box
 selected_anime = st.selectbox(
     "Type or select manga out of 14000+ manga's from the dropdown list & click on the image of selected one.",
     anime
 )
+
+# Show recommendation button
 if st.button('Show Recommendation'):
     names,link,img = recommend(selected_anime)
     for i in range(0,10,3):
